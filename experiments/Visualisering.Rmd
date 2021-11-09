@@ -4,3 +4,120 @@ author: "Nanna Burmeister"
 date: "9/11/2021"
 output: html_document
 ---
+# Open Jackson networks
+```{r}
+set.seed(1) # Set seed for reproducibility
+```
+
+## Step 1: External arrivals
+In an open Jackson network, jobs arrive from outside following a Poisson process with rate $\alpha > 0$. Then the interarrivals the system exponentially distributed with rate $\alpha > 0$.
+
+>>Show function<<
+
+## Step 2: M/M/1 queues
+A Jackson network consists of $K$ M/M/m queues. For simplicity I have chosen $m=1$,
+meaning at each node only have one server.
+
+>>Show function<<
+
+## Step 3: Open Jackson network
+Indsæt figurer.....
+
+>>Show function<<
+
+# Visualisation of output from the generators
+```{r, message = FALSE, warning = FALSE}
+source("C:/Users/Bruger/Documents/P8/Projekt/R/src/mm1_queue.R")
+source("C:/Users/Bruger/Documents/P8/Projekt/R/src/external_arrival_poisson.R")
+source("C:/Users/Bruger/Documents/P8/Projekt/R/src/OJN_simulation_manu.R")
+source("C:/Users/Bruger/Documents/P8/Projekt/R/src/OJN_simulation_supplier.R")
+```
+
+
+
+## Generate leadtimes for the supplier
+```{r, message = FALSE, warning = FALSE}
+#Parameters
+N <- 10e3  # number of events to simulate;
+C <- 6          # number of nodes Department 1
+K <- 6          # number of nodes Department 2
+M <- 6          # number of nodes Department 3
+alpha <- 0.1    # external arrival rate
+mu_I <- 0.2       # Input node (I) service rate 
+mu_D1 <- 0.1      # Deparment 1 (D_i^1) service rate
+mu_D2 <- 0.2      # Deparment 1 (D_i^1) service rate
+mu_D3 <- 0.3      # Deparment 1 (D_i^1) service rate
+mu_O <- 0.5       # Output node (O) service rate
+
+#Run generator
+supplier <- generate_leadtimes_supplier(N, C, K, M, alpha, mu_I, mu_D1, mu_D2, mu_D3, mu_O)
+```
+
+
+## Verify the simulation
+```{r}
+#Total sojourn time
+mean(supplier$total_time$sojourn_time)
+
+#Plot cummulative mean
+supplier$theoretical_sojourn_time
+
+#Generate stability plot
+x <- 1:N
+plot(x, cumsum(supplier$total_time$sojourn_time)/x, type = "l", lty = 1)
+abline(h = supplier$theoretical_sojourn_time, col="red")
+```
+
+## Generate leadtimes for the manufacturer
+```{r, message = FALSE, warning = FALSE}
+#Parameters
+N <- 10000  # number of events to simulate;
+C <- 6          # number of nodes Department 1
+K <- 6          # number of nodes Department 2
+M <- 6          # number of nodes Department 3
+alpha <- 0.1    # external arrival rate
+mu_I <- 0.2       # Input node (I) service rate 
+mu_D1 <- 0.1      # Deparment 1 (D_i^1) service rate
+mu_D2 <- 0.2      # Deparment 1 (D_i^1) service rate
+mu_D3 <- 0.3      # Deparment 1 (D_i^1) service rate
+mu_O <- 0.5       # Output node (O) service rate
+pIO <- 0.9
+
+#run generator
+manufacturer <- generate_leadtimes_manufacturer(N, C, K, M, alpha, mu_I, mu_D1, mu_D2, mu_D3, mu_O, pIO)
+```
+
+
+## Verify the simulation
+```{r}
+#Total sojourn time
+mean(manufacturer$total_time$sojourn_time)
+
+
+#Plot cummulative mean
+manufacturer$theoretical_sojourn_time
+
+
+#Generate stability plot
+x <- 1:N
+plot(x, cumsum(manufacturer$total_time$sojourn_time)/x, type = "l", lty = 1)
+abline(h = manufacturer$theoretical_sojourn_time, col="red")
+```
+
+# The distributions
+```{r, message = FALSE, warning = FALSE}
+# Load packages
+library("ggplot2")
+library("tidyverse")
+```
+
+
+## Histogram plots
+```{r, message = FALSE, warning = FALSE}
+supplier_LT_dist <- supplier$total_time %>% ggplot(aes(sojourn_time)) + geom_histogram(binwidth=1)
+print(supplier_LT_dist + ggtitle("Distribution of lead times generated from supplier"))
+
+manufacturer_LT_dist <- manufacturer$total_time %>% ggplot(aes(sojourn_time)) + geom_histogram(binwidth=1)
+print(manufacturer_LT_dist + ggtitle("Distribution of lead times generated from manufacturer"))
+```
+

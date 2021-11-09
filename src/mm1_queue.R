@@ -1,7 +1,6 @@
 ## M/M/1 queue
 
 simulate_mm1_queue <- function(arrival, mu) {
-
   
   number_of_arrivals <- length(arrival[,1])
   
