@@ -5,7 +5,7 @@ library(inventorize)
 #demand <- runif(5000, min = 4500, max = 5500)
 #leadtimes_retailer <- round(runif(5000, min = 1, max = 7))
 
-Inventory_model_retailer<- function(m, n, demand, leadtimes_retailer){
+Inventory_model_retailer<- function(m, n, p, demand, leadtimes_retailer){
   
 #Retailer
   #Generate forecast demand with moving average method with delay param n
@@ -40,7 +40,7 @@ Inventory_model_retailer<- function(m, n, demand, leadtimes_retailer){
   leadtime_demand_errors_retailer[1:(length(leadtimes_retailer)-max(leadtimes_retailer))] <- (leadtime_demand_retailer[1:(length(leadtimes_retailer)-max(leadtimes_retailer))] - leadtime_demand_forecast_retailer[1:(length(leadtimes_retailer)-max(leadtimes_retailer))])
   
   # Inventory level (position) to time t
-  z <- 1.65 # specifies the probability 95% that demand is fulfilled by the on-hand inventory on normal z-score
+  z <- qnorm(p) # specifies the probability 95% that demand is fulfilled by the on-hand inventory on normal z-score
   S_t <- rep(NA,length(leadtime_demand_forecast_retailer))
   for (i in ((max(n,m)+2)):(length(leadtime_demand_forecast_retailer))){
     S_t[i] <- leadtime_demand_forecast_retailer[i] + z*(sd(na.omit(leadtime_demand_errors_retailer[(max(n,m)+1):i])))

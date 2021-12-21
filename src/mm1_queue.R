@@ -13,7 +13,7 @@ simulate_mm1_queue <- function(arrival, mu) {
   
   for (i in 1:number_of_arrivals){
     if (i == 1 || leave_service_time[i-1] < arrival[i,2]){
-      #first job
+      #no queue
       enter_service_time[i] <- arrival[i,2]
     } else {
       #queue
@@ -26,7 +26,8 @@ simulate_mm1_queue <- function(arrival, mu) {
     list("id" = arrival[,1],
          "total_time" = total_time,
          "enter_service_time" = enter_service_time,
-         "leave_service_time" = leave_service_time
+         "leave_service_time" = leave_service_time,
+         "service" = service
     )
   )
 }
